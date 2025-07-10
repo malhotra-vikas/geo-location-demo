@@ -73,8 +73,10 @@
             await fetch("https://pl2qepw5nj.execute-api.us-east-2.amazonaws.com/default/allergenLOcationLambda", {
               method: "POST",
               headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": "*"
               },
+
               body: JSON.stringify({
                 latitude: ipData.latitude,
                 longitude: ipData.longitude,
