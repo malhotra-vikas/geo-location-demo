@@ -53,7 +53,11 @@
             const json = await res.json();
             console.log("✅ Lambda responded:", json);
 
-            output.textContent += `\nResolved Address: ${json.address?.city || 'Unknown City'}, ${json.address?.state || 'Unknown State'}, ${json.address?.country || 'Unknown Country'}`;
+            output.textContent += `
+              \n📍 ${json.address?.road || 'Unknown Road'}, ${json.address?.town || json.address?.city || 'Unknown Town'}
+              \n🗺️ ${json.address?.state || 'Unknown State'}, ${json.address?.country || 'Unknown Country'}
+            `;
+
           } catch (err) {
             console.error("❌ Error posting location:", err);
             output.textContent += "\nError sending location to server.";
