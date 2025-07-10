@@ -4,6 +4,30 @@
 <head>
   <meta charset="UTF-8" />
   <title>GeoLocation Demo</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 40px auto;
+      line-height: 1.6;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+    }
+
+    #output {
+      margin-top: 20px;
+      white-space: pre-line;
+      background: #f5f5f5;
+      padding: 15px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+  </style>
+
 </head>
 
 <body>
@@ -53,10 +77,33 @@
             const json = await res.json();
             console.log("✅ Lambda responded:", json);
 
-            output.textContent += `
-              \n📍 ${json.address?.road || 'Unknown Road'}, ${json.address?.town || json.address?.city || 'Unknown Town'}
-              \n🗺️ ${json.address?.state || 'Unknown State'}, ${json.address?.country || 'Unknown Country'}
-            `;
+            let formatted = "";
+
+            if (json.address?.house_number || json.address?.road) {
+              formatted += `📍 <strong>Street:</strong> ${json.address.house_number || ""} ${json.address.road || ""}<br>`;
+            }
+
+            if (json.address?.neighbourhood) {
+              formatted += `🏘 <strong>Neighborhood:</strong> ${json.address.neighbourhood}<br>`;
+            }
+
+            if (json.address?.town || json.address?.city || json.address?.village) {
+              formatted += `🏙 <strong>Town:</strong> ${json.address.town || json.address.city || json.address.village}<br>`;
+            }
+
+            if (json.address?.state) {
+              formatted += `🗺 <strong>State:</strong> ${json.address.state}<br>`;
+            }
+
+            if (json.address?.postcode) {
+              formatted += `🏷 <strong>Postal Code:</strong> ${json.address.postcode}<br>`;
+            }
+
+            if (json.address?.country) {
+              formatted += `🌎 <strong>Country:</strong> ${json.address.country}<br>`;
+            }
+
+            output.innerHTML += "<hr><h4>📦 Resolved Address:</h4>" + formatted;
 
           } catch (err) {
             console.error("❌ Error posting location:", err);
