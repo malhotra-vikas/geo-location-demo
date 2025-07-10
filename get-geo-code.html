@@ -1,0 +1,94 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2575.6">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  </style>
+</head>
+<body>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html lang="en"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta charset="UTF-8" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;title&gt;GeoLocation Demo&lt;/title&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;h2&gt;Detect My Location&lt;/h2&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;button onclick="getUserLocation()"&gt;Get Location&lt;/button&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;p id="output"&gt;&lt;/p&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>async function getUserLocation() {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const output = document.getElementById("output");</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>if (!navigator.geolocation) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>output.textContent = "Geolocation is not supported by your browser.";</p>
+<p class="p1"><span class="Apple-converted-space">        </span>return;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>output.textContent = "Locating...";</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>navigator.geolocation.getCurrentPosition(</p>
+<p class="p1"><span class="Apple-converted-space">        </span>async (position) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">          </span>const latitude = position.coords.latitude;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>const longitude = position.coords.longitude;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>const accuracy = position.coords.accuracy;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>output.textContent = `Latitude: ${latitude}, Longitude: ${longitude} (±${accuracy} meters)`;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>try {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const res = await fetch("https://pl2qepw5nj.execute-api.us-east-2.amazonaws.com/default/allergenLOcationLambda", {</p>
+<p class="p1"><span class="Apple-converted-space">              </span>method: "POST",</p>
+<p class="p1"><span class="Apple-converted-space">              </span>headers: {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>"Content-Type": "application/json"</p>
+<p class="p1"><span class="Apple-converted-space">              </span>},</p>
+<p class="p1"><span class="Apple-converted-space">              </span>body: JSON.stringify({</p>
+<p class="p1"><span class="Apple-converted-space">                </span>latitude,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>longitude,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>accuracy</p>
+<p class="p1"><span class="Apple-converted-space">              </span>})</p>
+<p class="p1"><span class="Apple-converted-space">            </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const json = await res.json();</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>output.textContent += `\nResolved Address: ${json.address?.city || 'Unknown City'}, ${json.address?.state || 'Unknown State'}, ${json.address?.country || 'Unknown Country'}`;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>} catch (err) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>console.error("Error posting location:", err);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>output.textContent += "\nError sending location to server.";</p>
+<p class="p1"><span class="Apple-converted-space">          </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>},</p>
+<p class="p1"><span class="Apple-converted-space">        </span>(error) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">          </span>switch (error.code) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>case error.PERMISSION_DENIED:</p>
+<p class="p1"><span class="Apple-converted-space">              </span>output.textContent = "User denied the request for Geolocation.";</p>
+<p class="p1"><span class="Apple-converted-space">              </span>break;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>case error.POSITION_UNAVAILABLE:</p>
+<p class="p1"><span class="Apple-converted-space">              </span>output.textContent = "Location information is unavailable.";</p>
+<p class="p1"><span class="Apple-converted-space">              </span>break;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>case error.TIMEOUT:</p>
+<p class="p1"><span class="Apple-converted-space">              </span>output.textContent = "The request to get user location timed out.";</p>
+<p class="p1"><span class="Apple-converted-space">              </span>break;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>default:</p>
+<p class="p1"><span class="Apple-converted-space">              </span>output.textContent = "An unknown error occurred.";</p>
+<p class="p1"><span class="Apple-converted-space">              </span>break;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>},</p>
+<p class="p1"><span class="Apple-converted-space">        </span>{</p>
+<p class="p1"><span class="Apple-converted-space">          </span>enableHighAccuracy: true,</p>
+<p class="p1"><span class="Apple-converted-space">          </span>timeout: 10000,</p>
+<p class="p1"><span class="Apple-converted-space">          </span>maximumAge: 0</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/script&gt;</p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
+</body>
+</html>
