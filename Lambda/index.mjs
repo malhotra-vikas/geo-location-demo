@@ -4,10 +4,11 @@ const fetchRestaurants = async (restaurantName, postalCode, city, state, accurac
 
     let url
     if (restaurantSearchCriteria === "latLong") {
-        url = `https://serpapi.com/search.json?q=${restaurantName} within ${accuracy} miles of ${postalCode}&api_key=${SERP_API_KEY}&hl=en&gl=us`;
+        url = `https://serpapi.com/search.json?q=${restaurantName} near ${postalCode}&api_key=${SERP_API_KEY}&hl=en&gl=us`;
+
     }
     if (restaurantSearchCriteria === "zipCode") {
-        url = `https://serpapi.com/search.json?q=${restaurantName} within ${accuracy} miles of ${postalCode}&api_key=${SERP_API_KEY}&hl=en&gl=us`;
+        url = `https://serpapi.com/search.json?q=${restaurantName} near ${postalCode}&api_key=${SERP_API_KEY}&hl=en&gl=us`;
     }
 
     console.log("URL being SERPED ", url)
